@@ -1,0 +1,42 @@
+import numpy as np
+import mne
+import matplotlib.pyplot as plt
+
+# Load the two raw data files
+raw1 = mne.io.read_raw_fif('GS_01_analysis_01-raw.fif', preload=True)
+raw2 = mne.io.read_raw_fif('GS_02_analysis_01-raw.fif', preload=True)
+raw_concatenated = mne.io.concatenate_raws([raw1, raw2])
+
+# Identify channels with zero or infinite values in the PSD
+channels_with_issues = ['MEG 053', 'MEG 067', 'MEG 102', 'MEG 137', 'MEG 154', 'MEG 181', 'MEG 182', 'MEG 183']
+
+# Mark bad channels
+raw_concatenated.info['bads'] = channels_with_issues
+
+# Remove bad channels
+raw_concatenated_cleaned = raw_concatenated.copy().drop_channels(raw_concatenated.info['bads'])
+
+# Define the duration of each epoch (in seconds)
+epoch_duration = 2  # 2 sec
+
+# Create fixed-length epochs for the entire concatenated raw data
+epochs_all = mne.make_fixed_length_epochs(raw_concatenated_cleaned, duration=epoch_duration, preload=True)
+
+# Plot PSD for cleaned data with labels
+fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(8, 6), sharex=True)
+
+# Plot PSD for the first 1 minute (eyes closed)
+epochs_closed = epochs_all[:len(epochs_all) // 2]  # First half is eyes closed
+epochs_closed.plot_psd(fmin=1, fmax=40, ax=ax1, color='blue', show=False, average=True, spatial_colors=False, line_alpha=0.5, dB=True, xscale='log')
+
+# Plot PSD for the last 1 minute (eyes open)
+epochs_open = epochs_all[len(epochs_all) // 2:]  # Second half is eyes open
+epochs_open.plot_psd(fmin=1, fmax=40, ax=ax2, color='red', show=False, average=True, spatial_colors=False, line_alpha=0.5, dB=True, xscale='log')
+
+# Add labels
+ax1.set(title='Power Spectral Density (First 1 Minute - Eyes Closed)', xlabel='Frequency (Hz)', ylabel='Power Spectral Density (dB)')
+ax2.set(title='Power Spectral Density (Last 1 Minute - Eyes Open)', xlabel='Frequency (Hz)', ylabel='Power Spectral Density (dB)')
+
+# Show the plot
+plt.tight_layout()
+plt.show()
