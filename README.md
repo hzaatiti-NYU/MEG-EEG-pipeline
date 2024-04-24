@@ -1,5 +1,9 @@
 # MEG-EEG-pipeline
 
+Plotting 2D sensor locations
+![image](https://github.com/hzaatiti-NYU/MEG-EEG-pipeline/assets/29655962/b0b6393d-f36d-4e30-b653-a3b38895c2a2)
+
+
 Plotting events
 We used the function mne.viz.plot_events() which plot each event versus its time (we provide the sampling frequency, so that it plot them versus time in seconds):
 
