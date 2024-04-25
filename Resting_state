@@ -103,9 +103,13 @@ power_closed.plot([0], baseline=None, mode='logratio', title='Average power (Eye
 # Plot the PSD for "eyes open" epochs
 power_open.plot([0], baseline=None, mode='logratio', title='Average power (Eyes Open)', axes=ax[1], show=False)
 
+# Remove the common title above the subplots
+fig.suptitle('')
+
 # Set titles for each subplot
 ax[0].set_title('Average power (Eyes Closed)')
 ax[1].set_title('Average power (Eyes Open)')
 
 plt.show()
+
 
