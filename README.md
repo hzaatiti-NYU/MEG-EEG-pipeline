@@ -17,3 +17,5 @@ Epochs objects have a built-in plotting method a plot_image, which shows each ep
 ![image](https://github.com/hzaatiti-NYU/MEG-EEG-pipeline/assets/29655962/fe3e70c2-f20f-481f-870f-f4a7c353ad2b)
 ![image](https://github.com/hzaatiti-NYU/MEG-EEG-pipeline/assets/29655962/6d75f870-5cd8-4bb8-9458-78f7003e2ea4)
 
+Average power of eyes closed and eyes open
+![image](https://github.com/hzaatiti-NYU/MEG-EEG-pipeline/assets/29655962/71dad2e5-3515-4772-9931-40effb7e18ba)
