@@ -111,5 +111,15 @@ ax[0].set_title('Average power (Eyes Closed)')
 ax[1].set_title('Average power (Eyes Open)')
 
 plt.show()
+epochs_closed.compute_psd(fmin=2.0, fmax=40.0).plot(
+    average=True, amplitude=False, picks=None, exclude="bads"
+)
 
+plt.show()
+
+epochs_open.compute_psd(fmin=2.0, fmax=40.0).plot(
+    average=True, amplitude=False, picks="data", exclude="bads"
+)
+
+plt.show()
 
