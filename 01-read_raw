@@ -35,3 +35,25 @@ raw.plot_sensors
 
 channels_with_issues = ['MEG 053', 'MEG 067', 'MEG 102', 'MEG 137', 'MEG 154', 'MEG 181', 'MEG 182', 'MEG 183']
 raw_concatenated.info['bads'] = channels_with_issues
+
+
+#Crop and filter the data
+raw_cropped = raw.copy().crop(tmax=100)
+raw_cropped.times[-1]
+raw_cropped_filtered = raw_cropped.filter(l_freq=0.1, h_freq=40)
+raw_cropped.load_data()
+raw_cropped_filtered = raw_cropped.copy().filter(l_freq=0.1, h_freq=40)
+raw_cropped.plot(events=events, event_id=event_id)
+raw_cropped_filtered.plot(events=events, event_id=event_id)
+import matplotlib.pyplot as plt
+
+fig, ax = plt.subplots(2)
+
+raw_cropped.plot_psd(ax=ax[0], show=False)
+raw_cropped_filtered.plot_psd(ax=ax[1], show=False)
+
+ax[0].set_title('PSD before filtering')
+ax[1].set_title('PSD after filtering')
+ax[1].set_xlabel('Frequency (Hz)')
+fig.set_tight_layout(True)
+plt.show()
