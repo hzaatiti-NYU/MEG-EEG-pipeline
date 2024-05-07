@@ -24,3 +24,6 @@ mne.viz.plot_compare_evokeds(
      epochs['eyes_open'].average(),
      evoked_diff]
 )
+# Equalize the number of epochs: To keep chance level at 50% accuracy, we first equalize the number of epochs in each condition.
+
+epochs.equalize_event_counts(epochs.event_id)
