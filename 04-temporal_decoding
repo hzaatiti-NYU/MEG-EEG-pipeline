@@ -14,13 +14,13 @@ epochs.apply_baseline((None, 0))
 #Calculate empirical evoked difference
 evoked_diff = mne.combine_evoked(
     [epochs['eyes_closed'].average(),
-     epochs_auditory['eyes_open'].average()],
+     epochs['eyes_open'].average()],
     weights=[1, -1]  # Subtraction
 )
 
 evoked_diff.plot(gfp=True)
 mne.viz.plot_compare_evokeds(
-    [epochs_auditory['eyes_closed'].average(),
-     epochs_auditory['eyes_open'].average(),
+    [epochs['eyes_closed'].average(),
+     epochs['eyes_open'].average(),
      evoked_diff]
 )
