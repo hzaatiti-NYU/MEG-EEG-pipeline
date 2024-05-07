@@ -1,0 +1,6 @@
+#Import the few packages we'll need
+import matplotlib
+import pathlib
+import mne
+
+#Ensure Matplotlib uses the Qt5Agg backend, which is the best choice for MNE-Python's interactive plotting functions.
