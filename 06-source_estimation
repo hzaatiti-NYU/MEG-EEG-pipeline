@@ -65,3 +65,26 @@ src
 mne.viz.plot_alignment(info=info, trans=trans_fname, subject=subject,
                        src=src, subjects_dir=subjects_dir, dig=True,
                        surfaces=['head-dense', 'white'], coord_frame='meg')
+
+# Compute the forward solution!
+conductivity = (0.3,)  # for single layer – used in MEG
+# conductivity = (0.3, 0.006, 0.3)  # for three layers – used in EEG
+model = mne.make_bem_model(subject=subject, ico=4,
+                           conductivity=conductivity,
+                           subjects_dir=subjects_dir)
+model
+bem_sol = mne.make_bem_solution(model)
+bem_sol
+bem_fname = pathlib.Path('out_data') / 'sample_bem.fif'
+mne.bem.write_bem_solution(bem_fname, bem_sol)
+fwd = mne.make_forward_solution(raw_fname,
+                                trans=trans_fname,
+                                src=src,
+                                bem=bem,
+                                meg=True, # include MEG channels
+                                eeg=False, # exclude EEG channels
+                                mindist=5.0, # ignore sources <= 5mm from inner skull
+                                n_jobs=1) # number of jobs to run in parallel
+fwd
+fwd_fname = pathlib.Path('out_data') / 'sample_fwd.fif'
+mne.write_forward_solution(fwd_fname, fwd, overwrite=True)
