@@ -37,3 +37,9 @@ epochs = mne.Epochs(raw,
                     proj=False)
 epochs.save(pathlib.Path('out_data') / 'epochs_for_source_epo.fif')
 epochs.info
+
+# View the BEM
+subjects_dir = pathlib.Path(mne.datasets.sample.data_path()) / 'subjects'
+
+mne.viz.plot_bem(subject='sample', subjects_dir=subjects_dir,
+                 orientation='coronal')
