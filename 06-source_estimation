@@ -112,3 +112,10 @@ fwd = mne.pick_types_forward(fwd, meg=True, eeg=False)
 info = contrast.info
 inverse_operator = make_inverse_operator(info, fwd, noise_cov,
                                          loose=0.2, depth=0.8)
+
+
+# Apply the inverse operator -> Calculate the source estimate method = "dSPM"
+snr = 3.
+lambda2 = 1. / snr ** 2
+stc = apply_inverse(epochs['Auditory/Left', inverse_operator, lambda2,
+                    method=method, pick_ori=None)
