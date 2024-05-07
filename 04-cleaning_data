@@ -1,0 +1,12 @@
+import pathlib
+import matplotlib
+
+import mne
+import mne_bids
+
+matplotlib.use('Qt5Agg')
+mne.set_log_level('warning')
+
+epochs = mne.read_epochs(pathlib.Path('out_data') / 'epochs_epo.fif')
+epochs.apply_baseline((None, 0))
+epochs.plot()
