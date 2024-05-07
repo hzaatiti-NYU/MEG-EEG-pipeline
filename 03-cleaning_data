@@ -92,3 +92,23 @@ ica.plot_components(inst=epochs)
 
 
 raw.filter(l_freq=1, h_freq=40)  # High-pass with 1. Hz cut-off is recommended for ICA
+
+
+# Detect ECG and EOG patterns
+ecg_epochs = mne.preprocessing.create_ecg_epochs(raw, reject=None,
+                                                 baseline=(None, -0.2),
+                                                 tmin=-0.5, tmax=0.5)
+ecg_evoked = ecg_epochs.average()
+ecg_inds, ecg_scores = ica.find_bads_ecg(
+    ecg_epochs, method='ctps')
+
+
+eog_epochs = mne.preprocessing.create_eog_epochs(raw, reject=None,
+                                                 baseline=(None, -0.2),
+                                                 tmin=-0.5, tmax=0.5)
+eog_evoked = eog_epochs.average()
+eog_inds, eog_scores = ica.find_bads_eog(
+    eog_epochs)
+
+components_to_exclude = ecg_inds + eog_inds
+ica.exclude = components_to_exclude
