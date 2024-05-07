@@ -27,3 +27,22 @@ mne.viz.plot_compare_evokeds(
 # Equalize the number of epochs: To keep chance level at 50% accuracy, we first equalize the number of epochs in each condition.
 
 epochs.equalize_event_counts(epochs.event_id)
+
+# Create input X and response y
+
+
+import numpy as np
+
+# Create an vector with length = no. of trials.
+y = np.empty(len(epochs.events), dtype=int)  
+
+# Which trials are eyes_closed, which are eyes_open?
+idx_left = epochs.events[:, 2] == epochs.event_id[' eyes_closed']
+idx_right = epochs.events[:, 2] == epochs.event_id['eyes_open']
+
+# Encode: eyes_closed = 0, eyes_open = 1.
+y[idx_left] = 0
+y[idx_right] = 1
+
+print(y)
+print(f'\nSize of y: {y.size}')
