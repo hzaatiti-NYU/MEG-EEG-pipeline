@@ -13,3 +13,13 @@ raw= mne.io.concatenate_raws([raw1, raw2])
 
 #Let's visualize the raw data!
 raw.plot()
+
+# Extract events
+events = mne.find_events(raw, stim_channel="STI 014")
+event_id = {
+    "eyes closed": 1,
+    "eyes open": 2,
+}
+
+#Plot the raw data again, but add event markers
+raw.plot(events=events, event_id=event_id)
