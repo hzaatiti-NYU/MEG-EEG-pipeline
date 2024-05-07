@@ -119,3 +119,9 @@ snr = 3.
 lambda2 = 1. / snr ** 2
 stc = apply_inverse(epochs['Auditory/Left', inverse_operator, lambda2,
                     method=method, pick_ori=None)
+
+# Show the result!
+brain = stc.plot(surface='inflated',
+                 hemi='both',
+                 subjects_dir=subjects_dir,
+                 time_viewer=True)
