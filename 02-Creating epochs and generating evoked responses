@@ -30,10 +30,13 @@ epochs = mne.Epochs(raw,
 epochs.plot()
 
 
-#Selecting epochs based on experimental conditions
+# Selecting epochs based on experimental conditions
 
 epochs['eyes closed/eyes open']
 epochs['eyes closed']
 epochs['eyes open']
 epochs['eyes closed'].plot_image()
 
+# Saving epochs
+epochs.save(pathlib.Path('out_data') / 'epochs_epo.fif', 
+            overwrite=True)
