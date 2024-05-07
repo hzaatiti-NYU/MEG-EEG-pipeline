@@ -60,3 +60,38 @@ n_trials = data.shape[0]
 
 X = data.reshape(n_trials, -1)
 print(X.shape)
+
+# Create a classifier
+from sklearn.pipeline import make_pipeline
+from mne.decoding import Scaler, Vectorizer, cross_val_multiscore
+
+# First, create X and y.
+epochs_grad = epochs.copy().pick_types(meg='grad')
+X = epochs_grad.get_data()
+y = epochs_grad.events[:, 2]
+
+# Classifier pipeline.
+clf = make_pipeline(
+    # An MNE scaler that correctly handles different channel types –
+    # isn't that great?!
+    Scaler(epochs_grad.info),
+    # Remember this annoying and error-prone NumPy array reshaping we had to do
+    # earlier? Not anymore, thanks to the MNE vectorizer!
+    Vectorizer(),
+    # And, finally, the actual classifier.
+    LogisticRegression())
+
+# Run cross-validation.
+# Note that we're using MNE's cross_val_multiscore() here, not scikit-learn's
+# cross_val_score() as above. We simply pass the number of desired CV splits,
+# and MNE will automatically do the rest for us.
+n_splits = 5
+scoring = 'roc_auc'
+scores = cross_val_multiscore(clf, X, y, cv=5, scoring='roc_auc')
+
+# Mean and standard deviation of ROC AUC across cross-validation runs.
+roc_auc_mean = round(np.mean(scores), 3)
+roc_auc_std = round(np.std(scores), 3)
+
+print(f'CV scores: {scores}')
+print(f'Mean ROC AUC = {roc_auc_mean:.3f} (SD = {roc_auc_std:.3f})')
