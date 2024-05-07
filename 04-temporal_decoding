@@ -10,3 +10,17 @@ mne.set_log_level('warning')
 #Load epochs
 epochs = mne.read_epochs(pathlib.Path('out_data') / 'epochs_epo.fif')
 epochs.apply_baseline((None, 0))
+
+#Calculate empirical evoked difference
+evoked_diff = mne.combine_evoked(
+    [epochs['eyes_closed'].average(),
+     epochs_auditory['eyes_open'].average()],
+    weights=[1, -1]  # Subtraction
+)
+
+evoked_diff.plot(gfp=True)
+mne.viz.plot_compare_evokeds(
+    [epochs_auditory['Auditory/Left'].average(),
+     epochs_auditory['Auditory/Right'].average(),
+     evoked_diff]
+)
