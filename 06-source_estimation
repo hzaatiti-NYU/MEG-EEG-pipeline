@@ -54,3 +54,14 @@ trans_fname = pathlib.Path('out_data') / 'sample.trans'
 info = mne.io.read_info(epochs_fname)
 fig = mne.viz.plot_alignment(info=info, trans=trans_fname, subject='sample', dig=True,
                              subjects_dir=subjects_dir, verbose=True)
+
+# Compute the source space
+subject = 'sample'
+src = mne.setup_source_space(subject=subject,
+                             spacing='oct4',  # Use oct6 during an actual analysis!
+                             subjects_dir=subjects_dir,
+                             add_dist=False)  # Remove this one during an actual analysis!
+src
+mne.viz.plot_alignment(info=info, trans=trans_fname, subject=subject,
+                       src=src, subjects_dir=subjects_dir, dig=True,
+                       surfaces=['head-dense', 'white'], coord_frame='meg')
