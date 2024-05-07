@@ -43,3 +43,52 @@ epochs.add_proj(projs)
 epochs.plot()
 
 epochs_cleaned = epochs.copy().apply_proj()
+
+# ICA: First, start with the raw data again and apply a 1.0 Hz high-pass filter, which is advantegeous for ICA performance.
+raw1 = mne.io.read_raw_fif('GS_01_analysis_01-raw.fif', preload=True)
+raw2 = mne.io.read_raw_fif('GS_02_analysis_01-raw.fif', preload=True)
+raw = mne.io.concatenate_raws([raw1, raw2])
+
+# Read our epochs
+
+epochs = mne.read_epochs(pathlib.Path('out_data') / 'epochs_epo.fif')
+epochs_selection = epochs.selection
+
+events, event_id = mne.events_from_annotations(raw)
+events = events[epochs_selection]
+
+
+# Create epochs for ICA. All parameters should match exactly the ones of the epochs we intend to clean.
+
+tmin = -0.3
+tmax = 0.5
+baseline = (None, 0)
+
+epochs_ica = mne.Epochs(raw,
+                        events=events,
+                        event_id=event_id,
+                        tmin=tmin,
+                        tmax=tmax,
+                        baseline=baseline,
+                        preload=True)
+
+# Finally, fit ICA!
+
+n_components = 0.8  # Should normally be higher, like 0.999!!
+method = 'picard'
+max_iter = 100  # Should normally be higher, like 500 or even 1000!!
+fit_params = dict(fastica_it=5)
+random_state = 42
+
+ica = mne.preprocessing.ICA(n_components=n_components,
+    max_pca_components=300,
+                            method=method,
+                            max_iter=max_iter,
+                            fit_params=fit_params,
+                            random_state=random_state)
+ica.fit(epochs_ica)
+
+ica.plot_components(inst=epochs)
+
+
+raw.filter(l_freq=1, h_freq=40)  # High-pass with 1. Hz cut-off is recommended for ICA
