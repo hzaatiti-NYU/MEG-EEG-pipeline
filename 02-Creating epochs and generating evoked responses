@@ -1,1 +1,30 @@
+import pathlib
+import matplotlib
 
+import mne
+import mne_bids
+
+matplotlib.use('Qt5Agg')
+# Load the two raw data files
+raw1 = mne.io.read_raw_fif('GS_01_analysis_01-raw.fif', preload=True)
+raw2 = mne.io.read_raw_fif('GS_02_analysis_01-raw.fif', preload=True)
+raw= mne.io.concatenate_raws([raw1, raw2])
+raw.filter(l_freq=0.1, h_freq=40)
+events, event_id = mne.events_from_annotations(raw)
+
+
+tmin = -0.3
+tmax = 0.5
+baseline = (None, 0)
+
+epochs = mne.Epochs(raw,
+                    events=events,
+                    event_id=event_id,
+                    tmin=tmin,
+                    tmax=tmax,
+                    baseline=baseline,
+                    preload=True)
+
+
+
+epochs.plot()
