@@ -18,3 +18,28 @@ reject_criteria = dict(mag=3000e-15,     # 3000 fT
 
 flat_criteria = dict(mag=1e-15,          # 1 fT
                      grad=1e-13)           # 1 µV
+
+epochs.drop_bad(reject=reject_criteria, flat=flat_criteria)
+epochs.plot_drop_log()
+
+# SSP
+# Load the two raw data files
+raw1 = mne.io.read_raw_fif('GS_01_analysis_01-raw.fif', preload=True)
+raw2 = mne.io.read_raw_fif('GS_02_analysis_01-raw.fif', preload=True)
+raw = mne.io.concatenate_raws([raw1, raw2])
+
+
+raw.filter(l_freq=0.1, h_freq=40)
+
+ecg_projs, ecg_events = mne.preprocessing.compute_proj_ecg(raw, n_grad=1, n_mag=1, n_eeg=0,
+                                                           average=True)
+
+eog_projs, eog_events = mne.preprocessing.compute_proj_eog(raw, n_grad=1, n_mag=1,
+                                                           n_eeg=1, average=True)
+
+projs = eog_projs + ecg_projs
+
+epochs.add_proj(projs)
+epochs.plot()
+
+epochs_cleaned = epochs.copy().apply_proj()
