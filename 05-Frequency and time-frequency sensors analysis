@@ -1,0 +1,8 @@
+import pathlib
+import matplotlib
+
+import mne
+import mne_bids
+
+matplotlib.use('Qt5Agg')
+mne.set_log_level('warning')
