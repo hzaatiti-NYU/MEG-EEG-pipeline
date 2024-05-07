@@ -5,3 +5,11 @@ import mne
 
 #Ensure Matplotlib uses the Qt5Agg backend, which is the best choice for MNE-Python's interactive plotting functions.
 matplotlib.use('Qt5Agg')
+
+# Load the two raw data files
+raw1 = mne.io.read_raw_fif('GS_01_analysis_01-raw.fif', preload=True)
+raw2 = mne.io.read_raw_fif('GS_02_analysis_01-raw.fif', preload=True)
+raw= mne.io.concatenate_raws([raw1, raw2])
+
+#Let's visualize the raw data!
+raw.plot()
