@@ -10,3 +10,11 @@ mne.set_log_level('warning')
 epochs = mne.read_epochs(pathlib.Path('out_data') / 'epochs_epo.fif')
 epochs.apply_baseline((None, 0))
 epochs.plot()
+
+# Reject artifacts based on channel signal amplitude
+reject_criteria = dict(mag=3000e-15,     # 3000 fT
+                       grad=3000e-13,    # 3000 fT/cm
+                       eeg=150e-6)       # 200 µV
+
+flat_criteria = dict(mag=1e-15,          # 1 fT
+                     grad=1e-13)           # 1 µV
