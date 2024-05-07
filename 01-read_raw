@@ -4,3 +4,4 @@ import pathlib
 import mne
 
 #Ensure Matplotlib uses the Qt5Agg backend, which is the best choice for MNE-Python's interactive plotting functions.
+matplotlib.use('Qt5Agg')
