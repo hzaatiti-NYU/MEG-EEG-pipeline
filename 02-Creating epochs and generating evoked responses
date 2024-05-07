@@ -32,11 +32,19 @@ epochs.plot()
 
 # Selecting epochs based on experimental conditions
 
-epochs['eyes closed/eyes open']
-epochs['eyes closed']
-epochs['eyes open']
-epochs['eyes closed'].plot_image()
+epochs['eyes_closed/eyes_open']
+epochs['eyes_closed']
+epochs['eyes_open']
+epochs['eyes_closed'].plot_image()
 
 # Saving epochs
 epochs.save(pathlib.Path('out_data') / 'epochs_epo.fif', 
             overwrite=True)
+
+# Creating evoked data
+evoked_eyes_closed = epochs['eyes_closed'].average()
+evoked_eyes_open = epochs['eyes_open'].average()
+evoked_eyes_closed.plot(spatial_colors=True)
+evoked_eyes_closed.plot_topomap(ch_type='mag')
+evoked_eyes_closed.plot_joint(picks='mag')
+mne.viz.plot_compare_evokeds([evoked_eyes_closed, evoked_eyes_open], picks='mag')
