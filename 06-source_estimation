@@ -1,0 +1,39 @@
+%matplotlib qt
+import pathlib
+import matplotlib
+import matplotlib.pyplot as plt
+import mne_bids
+import mne
+
+matplotlib.use('Qt5Agg')
+mne.set_log_level('warning')
+
+#Start with some fresh epochs
+bids_root = pathlib.Path('out_data/sample_BIDS')
+
+bids_path = mne_bids.BIDSPath(subject='01',
+                              session='01',
+                              task='audiovisual',
+                              run='01',
+                              datatype='meg',
+                              root=bids_root)
+
+raw = mne_bids.read_raw_bids(bids_path)
+raw.load_data()
+raw.filter(l_freq=0.1, h_freq=40)
+events, event_id = mne.events_from_annotations(raw)
+
+tmin = -0.200
+tmax = 0.500
+baseline = (None, 0)
+
+epochs = mne.Epochs(raw,
+                    events=events,
+                    event_id=event_id,
+                    tmin=tmin,
+                    tmax=tmax,
+                    baseline=baseline,
+                    preload=True,
+                    proj=False)
+epochs.save(pathlib.Path('out_data') / 'epochs_for_source_epo.fif')
+epochs.info
