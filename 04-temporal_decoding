@@ -123,3 +123,16 @@ mean_scores = np.mean(scores, axis=0)
 # Mean score across all time points.
 mean_across_all_times = round(np.mean(scores), 3)
 print(f'\n=> Mean CV score across all time points: {mean_across_all_times:.3f}')
+
+# Plot the classification results
+fig, ax = plt.subplots()
+
+ax.axhline(0.5, color='k', linestyle='--', label='chance')  # AUC = 0.5
+ax.axvline(0, color='k', linestyle='-')  # Mark time point zero.
+ax.plot(epochs.times, mean_scores, label='score')
+
+ax.set_xlabel('Time (s)')
+ax.set_ylabel('Mean ROC AUC')
+ax.legend()
+ax.set_title('Left vs Right')
+fig.suptitle('Sensor Space Decoding')
