@@ -95,3 +95,20 @@ noise_cov = mne.compute_covariance(epochs, tmax=0.,
                                    rank='info')
 mne.viz.plot_cov(noise_cov, info=info)
 contrast.plot_white(noise_cov)
+
+# Create the inverse operator
+from mne.forward import read_forward_solution
+from mne.minimum_norm import (make_inverse_operator, apply_inverse,
+                              write_inverse_operator)
+fwd_fname = os.path.join(data_path,
+    'derivatives/meg_derivatives/sub-01/ses-meg/meg/sub-01-meg-fwd.fif')
+fwd = mne.read_forward_solution(fwd_fname)
+fwd = mne.convert_forward_solution(fwd, surf_ori=True)
+
+# Restrict forward solution as necessary for MEG
+fwd = mne.pick_types_forward(fwd, meg=True, eeg=False)
+
+# make an M/EEG, MEG-only, and EEG-only inverse operator
+info = contrast.info
+inverse_operator = make_inverse_operator(info, fwd, noise_cov,
+                                         loose=0.2, depth=0.8)
