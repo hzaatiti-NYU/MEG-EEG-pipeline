@@ -88,3 +88,10 @@ fwd = mne.make_forward_solution(raw_fname,
 fwd
 fwd_fname = pathlib.Path('out_data') / 'sample_fwd.fif'
 mne.write_forward_solution(fwd_fname, fwd, overwrite=True)
+
+# Compute noise covariance
+noise_cov = mne.compute_covariance(epochs, tmax=0.,
+                                   method=['shrunk', 'empirical'],
+                                   rank='info')
+mne.viz.plot_cov(noise_cov, info=info)
+contrast.plot_white(noise_cov)
