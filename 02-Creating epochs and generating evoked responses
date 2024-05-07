@@ -52,3 +52,10 @@ mne.viz.plot_compare_evokeds([evoked_eyes_closed, evoked_eyes_open], picks='mag'
 # Saving evoked data
 mne.write_evokeds(fname=pathlib.Path('out_data') / 'evokeds_ave.fif',
                   evoked=[evoked_eyes_closed, evoked_eyes_open])
+
+
+# Reading evoked data
+evokeds = mne.read_evokeds(fname=pathlib.Path('out_data') / 'evokeds_ave.fif')
+
+
+
