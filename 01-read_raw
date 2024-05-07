@@ -28,3 +28,10 @@ raw.plot(events=events, event_id=event_id)
 raw.info
 raw.info['bads']
 
+# Visualize the sensor locations
+raw.plot_sensors
+
+# Mark channels as bad
+
+channels_with_issues = ['MEG 053', 'MEG 067', 'MEG 102', 'MEG 137', 'MEG 154', 'MEG 181', 'MEG 182', 'MEG 183']
+raw_concatenated.info['bads'] = channels_with_issues
