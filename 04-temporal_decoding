@@ -1,0 +1,12 @@
+#Multivariate Statistics (Decoding / MVPA) on MEG/EEG Data
+%matplotlib qt
+import pathlib
+import matplotlib
+import matplotlib.pyplot as plt
+import mne
+
+matplotlib.use('Qt5Agg')
+mne.set_log_level('warning')
+#Load epochs
+epochs = mne.read_epochs(pathlib.Path('out_data') / 'epochs_epo.fif')
+epochs.apply_baseline((None, 0))
