@@ -1,43 +1,65 @@
-#Import the few packages we'll need
+# Author: Saeed Zahran
+# This script will reading & visualize raw data, cropping, filtering, and saving
+
 import matplotlib
 import pathlib
 import mne
+import matplotlib.pyplot as plt
 
-#Ensure Matplotlib uses the Qt5Agg backend, which is the best choice for MNE-Python's interactive plotting functions.
+# Ensure Matplotlib uses the Qt5Agg backend, which is the best choice for MNE-Python's interactive plotting functions.
 matplotlib.use('Qt5Agg')
 
 # Load the two raw data files
 raw1 = mne.io.read_raw_fif('GS_01_analysis_01-raw.fif', preload=True)
 raw2 = mne.io.read_raw_fif('GS_02_analysis_01-raw.fif', preload=True)
-raw= mne.io.concatenate_raws([raw1, raw2])
+raw = mne.io.concatenate_raws([raw1, raw2])
 
-#Let's visualize the raw data!
+
+# Let's visualize the raw data!
 raw.plot()
+plt.show()
 
-# Extract events
+# Extract events from the STIM channels
 events = mne.find_events(raw, stim_channel="STI 014")
 event_id = {
     "eyes closed": 1,
     "eyes open": 2,
 }
 
-#Plot the raw data again, but add event markers
-raw.plot(events=events, event_id=event_id)
+fig = mne.viz.plot_events(
+    events, sfreq=raw.info["sfreq"], first_samp=raw.first_samp, event_id=event_id
+)
+# Plot the raw data again, but add event markers
+raw.plot(events=events,event_id=event_id)
+
+plt.show()
 
 # Gather some info about the data
-raw.info
-raw.info['bads']
+print(raw.info)
+print(raw.info['meas_date'])
+print(raw.info['sfreq'])
+print(raw.info['bads'])
+print(raw.ch_names[:10])
+print(raw.info['chs'][0])
 
 # Visualize the sensor locations
-raw.plot_sensors
+raw.plot_sensors(ch_type='mag')
+plt.show()
+
+raw.plot_sensors(kind='3d')
+plt.show()
 
 # Mark channels as bad
-
+# Identify channels with zero or infinite values in the PSD
 channels_with_issues = ['MEG 053', 'MEG 067', 'MEG 102', 'MEG 137', 'MEG 154', 'MEG 181', 'MEG 182', 'MEG 183']
-raw_concatenated.info['bads'] = channels_with_issues
 
+# Mark bad channels
+raw.info['bads'] = channels_with_issues
 
-#Crop and filter the data
+# Remove bad channels
+raw_concatenated_cleaned = raw.copy().drop_channels(raw.info['bads'])
+
+# Crop and filter the data
 raw_cropped = raw.copy().crop(tmax=100)
 raw_cropped.times[-1]
 raw_cropped_filtered = raw_cropped.filter(l_freq=0.1, h_freq=40)
@@ -57,3 +79,7 @@ ax[1].set_title('PSD after filtering')
 ax[1].set_xlabel('Frequency (Hz)')
 fig.set_tight_layout(True)
 plt.show()
+
+# Save the data
+raw_cropped_filtered.save(pathlib.Path('out_data') / 'cropped_filt_raw.fif',
+                              overwrite=True)
