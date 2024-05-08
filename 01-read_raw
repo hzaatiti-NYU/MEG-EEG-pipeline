@@ -1,5 +1,5 @@
 # Author: Saeed Zahran
-# This script will reading & visualize raw data, cropping, filtering, and saving
+# This script will read & visualize raw data, cropping, filtering, and saving
 
 import matplotlib
 import pathlib
