@@ -1,61 +1,61 @@
+# Author: Saeed Zahran
+# Creating epochs and generating evoked responses
+
 import pathlib
 import matplotlib
 
 import mne
-import mne_bids
-
+import matplotlib.pyplot as plt
 matplotlib.use('Qt5Agg')
+
 # Load the two raw data files
 raw1 = mne.io.read_raw_fif('GS_01_analysis_01-raw.fif', preload=True)
 raw2 = mne.io.read_raw_fif('GS_02_analysis_01-raw.fif', preload=True)
-raw= mne.io.concatenate_raws([raw1, raw2])
+raw = mne.io.concatenate_raws([raw1, raw2])
+
 raw.filter(l_freq=0.1, h_freq=40)
-events, event_id = mne.events_from_annotations(raw)
+
+events = mne.find_events(raw, stim_channel="STI 014")
+event_id = {
+    "eyes_closed": 1,
+    "eyes_open": 2,
+}
+
+# Define the duration of each epoch (in seconds)
+epoch_duration = 5
+
+# Create fixed-length epochs for the entire concatenated raw data
+epochs = mne.make_fixed_length_epochs(raw, duration=epoch_duration, preload=True)
 
 
-tmin = -0.3
-tmax = 0.5
-baseline = (None, 0)
 
-epochs = mne.Epochs(raw,
-                    events=events,
-                    event_id=event_id,
-                    tmin=tmin,
-                    tmax=tmax,
-                    baseline=baseline,
-                    preload=True)
-
-
+# Apply baseline correction
+epochs.apply_baseline((0, 0))
 
 epochs.plot()
+plt.show()
 
-
-# Selecting epochs based on experimental conditions
-
-epochs['eyes_closed/eyes_open']
-epochs['eyes_closed']
-epochs['eyes_open']
-epochs['eyes_closed'].plot_image()
+epochs.plot_image()
+plt.show()
 
 # Saving epochs
-epochs.save(pathlib.Path('out_data') / 'epochs_epo.fif', 
+epochs.save(pathlib.Path('out_data') / 'epochs_epo.fif',
             overwrite=True)
 
+# Extract epochs for "eyes closed" and "eyes open" events using event IDs
+epochs_closed = epochs[event_id["eyes_closed"]]
+epochs_open = epochs[event_id["eyes_open"]]
+
 # Creating evoked data
-evoked_eyes_closed = epochs['eyes_closed'].average()
-evoked_eyes_open = epochs['eyes_open'].average()
-evoked_eyes_closed.plot(spatial_colors=True)
-evoked_eyes_closed.plot_topomap(ch_type='mag')
-evoked_eyes_closed.plot_joint(picks='mag')
-mne.viz.plot_compare_evokeds([evoked_eyes_closed, evoked_eyes_open], picks='mag')
+evoked_closed = epochs_closed.average()
+evoked_open = epochs_open.average()
+
+evoked_closed.plot(spatial_colors=True)
+plt.show()
 
 # Saving evoked data
 mne.write_evokeds(fname=pathlib.Path('out_data') / 'evokeds_ave.fif',
-                  evoked=[evoked_eyes_closed, evoked_eyes_open])
-
+                  evoked=[evoked_closed, evoked_open])
 
 # Reading evoked data
 evokeds = mne.read_evokeds(fname=pathlib.Path('out_data') / 'evokeds_ave.fif')
-
-
-
