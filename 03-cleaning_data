@@ -1,114 +1,39 @@
 import pathlib
 import matplotlib
-
+import numpy as np
 import mne
-import mne_bids
+import matplotlib.pyplot as plt
 
 matplotlib.use('Qt5Agg')
 mne.set_log_level('warning')
 
 epochs = mne.read_epochs(pathlib.Path('out_data') / 'epochs_epo.fif')
-epochs.apply_baseline((None, 0))
-epochs.plot()
+#epochs.plot()
 
-# Reject artifacts based on channel signal amplitude
-reject_criteria = dict(mag=3000e-15,     # 3000 fT
-                       grad=3000e-13,    # 3000 fT/cm
-                       eeg=150e-6)       # 200 µV
-
-flat_criteria = dict(mag=1e-15,          # 1 fT
-                     grad=1e-13)           # 1 µV
-
-epochs.drop_bad(reject=reject_criteria, flat=flat_criteria)
-epochs.plot_drop_log()
-
-# SSP
 # Load the two raw data files
 raw1 = mne.io.read_raw_fif('GS_01_analysis_01-raw.fif', preload=True)
 raw2 = mne.io.read_raw_fif('GS_02_analysis_01-raw.fif', preload=True)
 raw = mne.io.concatenate_raws([raw1, raw2])
-
+raw.load_data().resample(100)
 
 raw.filter(l_freq=0.1, h_freq=40)
 
-ecg_projs, ecg_events = mne.preprocessing.compute_proj_ecg(raw, n_grad=1, n_mag=1, n_eeg=0,
-                                                           average=True)
 
-eog_projs, eog_events = mne.preprocessing.compute_proj_eog(raw, n_grad=1, n_mag=1,
-                                                           n_eeg=1, average=True)
+ecg_evoked = mne.preprocessing.create_ecg_epochs(raw).average()
+ecg_evoked.plot_joint()
+plt.show()
 
-projs = eog_projs + ecg_projs
+ecg_evoked.apply_baseline((None, None))
+ecg_evoked.plot_joint()
+plt.show()
+
+projs, events = mne.preprocessing.compute_proj_ecg(raw, n_grad=1, n_mag=1, n_eeg=1, reject=None)
+mne.viz.plot_projs_topomap(ecg_projs, info=raw.info)
+plt.show()
+
+projs =  projs
 
 epochs.add_proj(projs)
-epochs.plot()
-
 epochs_cleaned = epochs.copy().apply_proj()
-
-# ICA: First, start with the raw data again and apply a 1.0 Hz high-pass filter, which is advantegeous for ICA performance.
-raw1 = mne.io.read_raw_fif('GS_01_analysis_01-raw.fif', preload=True)
-raw2 = mne.io.read_raw_fif('GS_02_analysis_01-raw.fif', preload=True)
-raw = mne.io.concatenate_raws([raw1, raw2])
-
-# Read our epochs
-
-epochs = mne.read_epochs(pathlib.Path('out_data') / 'epochs_epo.fif')
-epochs_selection = epochs.selection
-
-events, event_id = mne.events_from_annotations(raw)
-events = events[epochs_selection]
-
-
-# Create epochs for ICA. All parameters should match exactly the ones of the epochs we intend to clean.
-
-tmin = -0.3
-tmax = 0.5
-baseline = (None, 0)
-
-epochs_ica = mne.Epochs(raw,
-                        events=events,
-                        event_id=event_id,
-                        tmin=tmin,
-                        tmax=tmax,
-                        baseline=baseline,
-                        preload=True)
-
-# Finally, fit ICA!
-
-n_components = 0.8  # Should normally be higher, like 0.999!!
-method = 'picard'
-max_iter = 100  # Should normally be higher, like 500 or even 1000!!
-fit_params = dict(fastica_it=5)
-random_state = 42
-
-ica = mne.preprocessing.ICA(n_components=n_components,
-    max_pca_components=300,
-                            method=method,
-                            max_iter=max_iter,
-                            fit_params=fit_params,
-                            random_state=random_state)
-ica.fit(epochs_ica)
-
-ica.plot_components(inst=epochs)
-
-
-raw.filter(l_freq=1, h_freq=40)  # High-pass with 1. Hz cut-off is recommended for ICA
-
-
-# Detect ECG and EOG patterns
-ecg_epochs = mne.preprocessing.create_ecg_epochs(raw, reject=None,
-                                                 baseline=(None, -0.2),
-                                                 tmin=-0.5, tmax=0.5)
-ecg_evoked = ecg_epochs.average()
-ecg_inds, ecg_scores = ica.find_bads_ecg(
-    ecg_epochs, method='ctps')
-
-
-eog_epochs = mne.preprocessing.create_eog_epochs(raw, reject=None,
-                                                 baseline=(None, -0.2),
-                                                 tmin=-0.5, tmax=0.5)
-eog_evoked = eog_epochs.average()
-eog_inds, eog_scores = ica.find_bads_eog(
-    eog_epochs)
-
-components_to_exclude = ecg_inds + eog_inds
-ica.exclude = components_to_exclude
+epochs_cleaned.plot()
+plt.show()
