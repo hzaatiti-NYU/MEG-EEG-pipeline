@@ -1,3 +1,4 @@
+# Author: Saeed Zahran
 import pathlib
 import matplotlib
 import numpy as np
