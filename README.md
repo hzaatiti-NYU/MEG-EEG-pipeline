@@ -1,29 +1,79 @@
+![MNE-Python Logo](https://mne.tools/stable/_static/mne_logo.svg "MNE-Python")
+
 # MEG-EEG-pipeline
 
-Plotting 2D sensor locations
-![image](https://github.com/hzaatiti-NYU/MEG-EEG-pipeline/assets/29655962/b0b6393d-f36d-4e30-b653-a3b38895c2a2)
+
+## Preparations
+
+You need to set up a Python environment with a number of dependencies. The following instructions will guide you through the process.
+
+### Download & install Anaconda
+
+We work with the Anaconda Python distribution.
+
+- [Installation instructions for Windows](https://docs.continuum.io/anaconda/install/windows/)
+- [Installation instructions for macOS](https://docs.continuum.io/anaconda/install/mac-os/)
+- [Installation instructions for Linux](https://docs.continuum.io/anaconda/install/linux/)
+
+### Install MNE-Python
+
+- [Open an Anaconda prompt](https://docs.continuum.io/anaconda/install/verify-install/#conda)
+- Follow the [MNE-Python installation instructions for your operating system](https://mne.tools/stable/install/mne_python.html#for-3d-plotting-and-source-analysis)
+- Activate your newly-installed MNE-Python environment by typing into the Anaconda prompt:
+  ```
+  conda activate mne
+  ```
+- Verify your MNE-Python installation by running in the Anaconda prompt:
+  ```
+  mne sys_info
+  ```
+  The output should look similar to the following:
+  ```
+    Platform:      macOS-10.15.7-x86_64-i386-64bit
+    Python:        3.8.5 (default, Sep  4 2020, 02:22:02)  [Clang 10.0.0 ]
+    Executable:    /Users/richard/miniconda3/envs/mne-new/bin/python
+    CPU:           i386: 4 cores
+    Memory:        8.0 GB
+
+    mne:           0.21.1
+    numpy:         1.19.2 {blas=mkl_rt, lapack=mkl_rt}
+    scipy:         1.5.2
+    matplotlib:    3.3.2 {backend=MacOSX}
+
+    sklearn:       0.23.2
+    numba:         0.51.2
+    nibabel:       3.2.0
+    cupy:          Not found
+    pandas:        1.1.3
+    dipy:          1.3.0
+    mayavi:        4.7.2
+    pyvista:       0.27.2 {pyvistaqt=0.2.0, OpenGL 4.1 INTEL-14.7.8 via Intel HD Graphics 5000 OpenGL Engine}
+    vtk:           9.0.1
+    PyQt5:         5.13.2
+    ```
+
+### Install JupyterLab
+
+We will use the Jupyter Lab environment to run our notebooks. Inside the Anaconda prompt, run:
+```
+conda activate mne
+conda install -y jupyterlab
+```
+
+Then, run:
+```
+jupyter lab
+```
+If the installation was successful, your browser should open. You may close it again, and stop the JupyterLab process in the Anaconda prompt by pressing the keys `Ctrl` and `C` simultaneously and then enterying `y` when asked if you're sure.
 
 
-Plotting events
-We used the function mne.viz.plot_events() which plot each event versus its time (we provide the sampling frequency, so that it plot them versus time in seconds):
+## Pipline summary
 
-![Figure_1](https://github.com/hzaatiti-NYU/MEG-EEG-pipeline/assets/29655962/337bc883-14e4-450a-ae49-285681dc29cf)
+The pipline cover a broad range of topics to help you get to know all essential parts for conducting MEG and EEG data analysis:
 
-Compute the power spectral density (PSD) using Morlet wavelets
-![Figure_1](https://github.com/hzaatiti-NYU/MEG-EEG-pipeline/assets/29655962/eb5bf5e9-fdd6-408d-bd0f-135e6cc76831)
-
-
-Epochs objects have a built-in plotting method a plot_image, which shows each epoch as one row of an image map, with color representing signal magnitude; the average evoked response and the sensor location are shown below the image:
-![image](https://github.com/hzaatiti-NYU/MEG-EEG-pipeline/assets/29655962/fe3e70c2-f20f-481f-870f-f4a7c353ad2b)
-![image](https://github.com/hzaatiti-NYU/MEG-EEG-pipeline/assets/29655962/6d75f870-5cd8-4bb8-9458-78f7003e2ea4)
-
-Average power of eyes closed and eyes open
-![image](https://github.com/hzaatiti-NYU/MEG-EEG-pipeline/assets/29655962/71dad2e5-3515-4772-9931-40effb7e18ba)
-
-Exploring the frequency content of our eyes closed epochs
-![image](https://github.com/hzaatiti-NYU/MEG-EEG-pipeline/assets/29655962/c1814b86-25a6-432e-9ac6-c35ed89215c6)
-
-Exploring the frequency content of our eyes open epochs
-![image](https://github.com/hzaatiti-NYU/MEG-EEG-pipeline/assets/29655962/2b81da83-efc5-4d18-a88b-f3cba05fe6d7)
-
-
+- loading, filtering, and inspecting raw data
+- epoching and artifact correction
+- creating and visualizing evoked responses (ERP / ERF)
+- decoding neural responses (machine learning)
+- performing time-frequency analysis
+- estimating and visualizing cortical sources (source localization)
